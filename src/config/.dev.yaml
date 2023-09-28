@@ -7,3 +7,5 @@ DB_CONFIG:
   password: "root"
   database: "hole-dev"
   synchronize: true
+
+AVATAR_URL: "https://api.multiavatar.com/"
