@@ -1,3 +1,9 @@
-TEST_VALUE:
-  name: "dev_cookie"
-  
+DB_CONFIG:
+  name: "hole-dev"
+  type: "mysql"
+  host: "localhost"
+  port: "3306"
+  username: "root"
+  password: "root"
+  database: "hole-dev"
+  synchronize: true
