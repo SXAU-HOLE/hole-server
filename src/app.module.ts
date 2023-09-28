@@ -20,6 +20,7 @@ import { AuthModule } from './modules/auth/auth.module';
         return {
           ...config.get('DB_CONFIG'),
           autoLoadEntities: true,
+          synchronize: true,
         } as TypeOrmModuleOptions;
       },
     }),

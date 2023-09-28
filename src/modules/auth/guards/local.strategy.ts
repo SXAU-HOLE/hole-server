@@ -1,4 +1,5 @@
 import {
+  BadGatewayException,
   Injectable,
   NotAcceptableException,
   NotFoundException,
@@ -9,6 +10,7 @@ import { isString } from 'class-validator';
 import { Strategy } from 'passport-local';
 import { User } from 'src/entity/user.entity';
 import { Repository } from 'typeorm';
+import { verifyPassword } from '../auth.utils';
 
 @Injectable()
 export class LocalStrategy extends PassportStrategy(Strategy) {
@@ -16,22 +18,29 @@ export class LocalStrategy extends PassportStrategy(Strategy) {
   private readonly userRepo: Repository<User>;
 
   constructor() {
-    super({});
+    super({
+      usernameField: 'studentId',
+      passwordField: 'password',
+    });
   }
 
-  async validate(studentId: string, password: string) {
-    // if (!isString(studentId)) {
-    //   throw new NotAcceptableException('学号格式错误');
-    // }
+  async validate(studentId: string, password: string): Promise<any> {
+    if (!isString(studentId) || !isString(password)) {
+      throw new NotAcceptableException('学号或密码格式错误');
+    }
 
-    // const user = await this.userRepo.findOne({
-    //   where: { studentId },
-    // });
+    const user = await this.userRepo.findOne({
+      where: { studentId },
+    });
 
-    // if (!user) {
-    //   throw new NotFoundException('用户不存在');
-    // }
+    if (!user) {
+      throw new NotFoundException('用户不存在');
+    }
 
-    return 'user';
+    if (!verifyPassword(user.password, password)) {
+      return new BadGatewayException('学号或者密码错误');
+    }
+
+    return user;
   }
 }

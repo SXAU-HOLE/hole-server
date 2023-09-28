@@ -52,7 +52,7 @@ export class AutoIncIdEntity {
 
   @UpdateDateColumn({
     type: 'timestamp',
-    name: 'update_date',
+    name: 'update_at',
     comment: '更新时间',
     select: false,
   })
@@ -60,7 +60,7 @@ export class AutoIncIdEntity {
 
   @UpdateDateColumn({
     type: 'timestamp',
-    name: 'delete_date',
+    name: 'delete_at',
     comment: '删除时间',
     select: false,
   })

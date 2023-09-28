@@ -40,7 +40,7 @@ export class AuthService {
       dto.sxauPassword,
     );
 
-    if (isSXAUPasswordVerified) {
+    if (!isSXAUPasswordVerified) {
       throw new BadRequestException('信息门户密码错误');
     }
 
@@ -55,7 +55,7 @@ export class AuthService {
     });
 
     const avatarApiUrl = this.configService.get('AVATAR_URL');
-    user.avatar = `${avatarApiUrl}/${user.username}`;
+    user.avatar = `${avatarApiUrl}${user.username}`;
 
     return await this.userRepo.save(user);
   }
