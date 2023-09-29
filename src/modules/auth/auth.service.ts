@@ -1,10 +1,16 @@
-import { BadRequestException, Inject, Injectable } from '@nestjs/common';
-import { LoginDTO, RegisterDTO } from './dto/auth.dto';
+import {
+  BadRequestException,
+  Inject,
+  Injectable,
+  NotFoundException,
+} from '@nestjs/common';
+import { ForgetPasswordDTO, LoginDTO, RegisterDTO } from './dto/auth.dto';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Gender, User } from 'src/entity/user.entity';
 import { Repository } from 'typeorm';
-import { encryptPassword } from './auth.utils';
+import { encryptPassword, verifyPassword } from './auth.utils';
 import { ConfigService } from '@nestjs/config';
+import { JwtService } from '@nestjs/jwt';
 
 @Injectable()
 export class AuthService {
@@ -14,13 +20,31 @@ export class AuthService {
   @Inject()
   private readonly configService: ConfigService;
 
-  login(dto: LoginDTO) {
-    return dto;
+  constructor(private readonly jwtService: JwtService) {}
+
+  async login(dto: LoginDTO) {
+    const { password, studentId } = dto;
+
+    const user = await this.userRepo.findOne({
+      where: { studentId: studentId },
+      select: { password: true },
+    });
+    const isVerified = await verifyPassword(user.password, password);
+
+    if (!isVerified) {
+      throw new BadRequestException('账号或密码错误');
+    }
+
+    const token = this.signToken(studentId);
+
+    return token;
   }
 
   async register(dto: RegisterDTO) {
+    const { studentId, username, sxauPassword } = dto;
+
     const isStudentIdExist = await this.userRepo.findOneBy({
-      studentId: dto.studentId,
+      studentId,
     });
 
     if (isStudentIdExist) {
@@ -28,7 +52,7 @@ export class AuthService {
     }
 
     const isUsernameExist = await this.userRepo.findOneBy({
-      username: dto.username,
+      username,
     });
 
     if (isUsernameExist) {
@@ -36,28 +60,66 @@ export class AuthService {
     }
 
     const isSXAUPasswordVerified = await this.verifySXAUPassword(
-      dto.studentId,
-      dto.sxauPassword,
+      studentId,
+      sxauPassword,
     );
 
     if (!isSXAUPasswordVerified) {
       throw new BadRequestException('信息门户密码错误');
     }
 
-    const password = await encryptPassword(dto.password);
-    const sxauPassword = await encryptPassword(dto.sxauPassword);
+    const enPassword = await encryptPassword(dto.password);
+    const enSxauPassword = await encryptPassword(dto.sxauPassword);
 
     const user = this.userRepo.create({
       ...dto,
-      password,
-      sxauPassword,
+      password: enPassword,
+      sxauPassword: enSxauPassword,
       gender: Gender.Mele, // TODO change gender
     });
 
     const avatarApiUrl = this.configService.get('AVATAR_URL');
     user.avatar = `${avatarApiUrl}${user.username}`;
 
-    return await this.userRepo.save(user);
+    await this.userRepo.save(user);
+
+    const token = this.signToken(studentId);
+
+    return token;
+  }
+
+  async forget(dto: ForgetPasswordDTO) {
+    const { studentId, password, sxauPassword } = dto;
+
+    const user = await this.userRepo.findOneBy({
+      studentId,
+    });
+
+    if (!user) {
+      throw new NotFoundException('用户不存在');
+    }
+
+    const isSXAUPasswordVerified = await this.verifySXAUPassword(
+      studentId,
+      sxauPassword,
+    );
+
+    if (isSXAUPasswordVerified) {
+      throw new BadRequestException('信息门户密码错误');
+    }
+
+    user.password = await encryptPassword(password);
+    user.sxauPassword = await encryptPassword(sxauPassword);
+
+    await this.userRepo.save(user);
+
+    const token = this.signToken(studentId);
+
+    return token;
+  }
+
+  signToken(studentId: string) {
+    return this.jwtService.sign({ studentId });
   }
 
   /**

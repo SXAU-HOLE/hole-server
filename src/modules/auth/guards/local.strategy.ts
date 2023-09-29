@@ -1,5 +1,4 @@
 import {
-  BadGatewayException,
   Injectable,
   NotAcceptableException,
   NotFoundException,
@@ -10,7 +9,6 @@ import { isString } from 'class-validator';
 import { Strategy } from 'passport-local';
 import { User } from 'src/entity/user.entity';
 import { Repository } from 'typeorm';
-import { verifyPassword } from '../auth.utils';
 
 @Injectable()
 export class LocalStrategy extends PassportStrategy(Strategy) {
@@ -37,10 +35,6 @@ export class LocalStrategy extends PassportStrategy(Strategy) {
       throw new NotFoundException('用户不存在');
     }
 
-    if (!verifyPassword(user.password, password)) {
-      return new BadGatewayException('学号或者密码错误');
-    }
-
-    return user;
+    return true;
   }
 }

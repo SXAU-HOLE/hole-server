@@ -1,8 +1,7 @@
-import { Body, Controller, Inject, Post, Req, UseGuards } from '@nestjs/common';
+import { Body, Controller, Inject, Post, UseGuards } from '@nestjs/common';
 import { AuthService } from './auth.service';
-import { LoginDTO, RegisterDTO } from './dto/auth.dto';
+import { ForgetPasswordDTO, LoginDTO, RegisterDTO } from './dto/auth.dto';
 import { LocalAuthGuard } from './guards/local-auth.guard';
-import { AuthGuard } from '@nestjs/passport';
 
 @Controller('auth')
 export class AuthController {
@@ -11,12 +10,18 @@ export class AuthController {
 
   @UseGuards(LocalAuthGuard)
   @Post('/login')
-  login(@Body() dto: LoginDTO, @Req() req) {
-    return req.user;
+  login(@Body() dto: LoginDTO) {
+    // return req.user;
+    return this.authService.login(dto);
   }
 
   @Post('/register')
   register(@Body() dto: RegisterDTO) {
     return this.authService.register(dto);
+  }
+
+  @Post('/forget')
+  forget(@Body() dto: ForgetPasswordDTO) {
+    return this.authService.forget(dto);
   }
 }
