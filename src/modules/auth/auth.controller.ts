@@ -2,7 +2,9 @@ import { Body, Controller, Inject, Post, UseGuards } from '@nestjs/common';
 import { AuthService } from './auth.service';
 import { ForgetPasswordDTO, LoginDTO, RegisterDTO } from './dto/auth.dto';
 import { LocalAuthGuard } from './guards/local-auth.guard';
+import { Public } from 'src/common/decorator/public.decorator';
 
+@Public()
 @Controller('auth')
 export class AuthController {
   @Inject()
@@ -11,7 +13,6 @@ export class AuthController {
   @UseGuards(LocalAuthGuard)
   @Post('/login')
   login(@Body() dto: LoginDTO) {
-    // return req.user;
     return this.authService.login(dto);
   }
 

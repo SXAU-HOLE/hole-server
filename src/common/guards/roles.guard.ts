@@ -2,6 +2,7 @@ import {
   BadRequestException,
   CanActivate,
   ExecutionContext,
+  ForbiddenException,
   Injectable,
   NotFoundException,
 } from '@nestjs/common';
@@ -34,7 +35,6 @@ export class RolesGuard implements CanActivate {
     }
 
     const { user: reqUser } = context.switchToHttp().getRequest();
-    console.log(reqUser);
 
     const user = await this.userRepo.findOne({
       where: { studentId: reqUser?.studentId },
@@ -56,7 +56,7 @@ export class RolesGuard implements CanActivate {
     const hasRole = requiredRoles.some((role) => user.role === role);
 
     if (!hasRole) {
-      throw new BadRequestException('权限不足');
+      throw new ForbiddenException('权限不足');
     }
 
     return true;
