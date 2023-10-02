@@ -1,7 +1,7 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { ValidatorConstraint } from 'class-validator';
-import { User } from 'src/entity/user.entity';
+import { User } from 'src/entity/user/user.entity';
 import { Repository } from 'typeorm';
 
 @ValidatorConstraint({ async: true })

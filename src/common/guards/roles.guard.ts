@@ -7,7 +7,7 @@ import {
   NotFoundException,
 } from '@nestjs/common';
 import { Reflector } from '@nestjs/core';
-import { Role, User } from 'src/entity/user.entity';
+import { Role, User } from 'src/entity/user/user.entity';
 import { ROLES_KEY } from '../decorator/roles.decorator';
 import { IS_PUBLIC_KEY } from '../decorator/public.decorator';
 import { Repository } from 'typeorm';

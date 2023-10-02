@@ -6,7 +6,7 @@ import {
 } from '@nestjs/common';
 import { ForgetPasswordDTO, LoginDTO, RegisterDTO } from './dto/auth.dto';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Gender, User } from 'src/entity/user.entity';
+import { Gender, User } from 'src/entity/user/user.entity';
 import { Repository } from 'typeorm';
 import { encryptPassword, verifyPassword } from './auth.utils';
 import { ConfigService } from '@nestjs/config';

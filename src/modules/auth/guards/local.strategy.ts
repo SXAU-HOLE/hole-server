@@ -7,7 +7,7 @@ import { PassportStrategy } from '@nestjs/passport';
 import { InjectRepository } from '@nestjs/typeorm';
 import { isString } from 'class-validator';
 import { Strategy } from 'passport-local';
-import { User } from 'src/entity/user.entity';
+import { User } from 'src/entity/user/user.entity';
 import { Repository } from 'typeorm';
 
 @Injectable()
