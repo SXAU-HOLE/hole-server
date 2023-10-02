@@ -1,5 +1,15 @@
 import { AutoIncIdEntity } from 'src/common/entity/common.entity';
-import { Column, Entity, Index } from 'typeorm';
+import {
+  Column,
+  Entity,
+  Index,
+  JoinTable,
+  ManyToMany,
+  OneToMany,
+} from 'typeorm';
+import { Hole } from '../hole/hole.entity';
+import { Comment } from '../hole/comment.entity';
+import { Reply } from '../hole/reply.entity';
 
 export enum Gender {
   Mele = '男',
@@ -36,4 +46,26 @@ export class User extends AutoIncIdEntity {
 
   @Column({ comment: '头像' })
   avatar?: string;
+
+  @OneToMany(() => Hole, (hole) => hole.user, { cascade: true })
+  holes: Hole[];
+
+  @OneToMany(() => Comment, (comment) => comment.user)
+  comments: Comment[];
+
+  @ManyToMany(() => Hole, (hole) => hole.favoriteUsers, { cascade: true })
+  @JoinTable()
+  favoriteHole: Hole[];
+
+  @ManyToMany(() => Comment, (comment) => comment.favoriteUsers, {
+    cascade: true,
+  })
+  @JoinTable()
+  favoriteComment: Comment[];
+
+  @ManyToMany(() => Reply, (reply) => reply.favoriteUsers, { cascade: true })
+  farotiteReply: Reply[];
+
+  @OneToMany(() => Reply, (reply) => reply.user)
+  replies: Reply[];
 }

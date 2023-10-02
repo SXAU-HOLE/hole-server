@@ -7,6 +7,11 @@ import { TypeOrmModule, TypeOrmModuleOptions } from '@nestjs/typeorm';
 import { AuthModule } from './modules/auth/auth.module';
 import { UserModule } from './modules/user/user.module';
 import { CommonModule } from './common/common.module';
+import { User } from './entity/user/user.entity';
+import { Hole } from './entity/hole/hole.entity';
+import { Tags } from './entity/hole/tags.entity';
+import { Reply } from './entity/hole/reply.entity';
+import { Comment } from './entity/hole/comment.entity';
 
 @Module({
   imports: [
@@ -21,8 +26,8 @@ import { CommonModule } from './common/common.module';
       useFactory: (config: ConfigService) => {
         return {
           ...config.get('DB_CONFIG'),
-          autoLoadEntities: true,
           synchronize: true,
+          entities: [User, Hole, Tags, Comment, Reply]
         } as TypeOrmModuleOptions;
       },
     }),

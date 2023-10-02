@@ -4,9 +4,10 @@ import { RolesGuard } from './guards/roles.guard';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { User } from 'src/entity/user/user.entity';
 import { JwtAuthGuard } from 'src/modules/auth/guards/jwt-auth.guard';
+import { Hole } from 'src/entity/hole/hole.entity';
 
 @Module({
-  imports: [TypeOrmModule.forFeature([User])],
+  imports: [TypeOrmModule.forFeature([User,Hole])],
   providers: [
     { provide: APP_GUARD, useClass: RolesGuard },
     { provide: APP_GUARD, useClass: JwtAuthGuard },
