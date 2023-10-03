@@ -37,7 +37,10 @@ export class AuthService {
 
     const token = this.signToken(studentId);
 
-    return token;
+    return {
+      asscee_token: token,
+      message: "登录成功！"
+    };
   }
 
   async register(dto: RegisterDTO) {

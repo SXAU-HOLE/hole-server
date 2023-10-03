@@ -10,11 +10,26 @@ import { Observable, map } from 'rxjs';
 export class TransformInterceptor implements NestInterceptor {
   intercept(context: ExecutionContext, next: CallHandler): Observable<any> {
     return next.handle().pipe(
-      map((data) => ({
-        data,
-        code: 200,
-        message: '请求成功',
-      })),
+      
+      map((data) => {
+        if(typeof data === 'object') {
+          if(data.message) {
+            const {message,...other} = data
+            
+            return {
+              data: other,
+              message: message,
+              code: 200
+            }
+          }
+        } else {
+          return {
+            data,
+            message: '请求成功',
+            code: 200
+          }
+        }
+      }),
     );
   }
 }
