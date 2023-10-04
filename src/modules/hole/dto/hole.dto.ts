@@ -1,11 +1,13 @@
 import {
   ArrayMaxSize,
   IsArray,
+  IsEnum,
   IsNumber,
   IsString,
   MaxLength,
 } from 'class-validator';
 import { Limit } from 'src/common/constants/limit';
+import { PaginateQuery } from 'src/common/dto/paginate.dto';
 
 export class CreateHoleDto {
   @MaxLength(Limit.hole.holeBodyMaxLength, {
@@ -39,3 +41,14 @@ export class GetHoleDetailQuery {
 }
 
 export class DeleteHoleDto extends GetHoleDetailQuery {}
+
+export enum HoleListMode {
+  latest = 'latest',
+  hot = 'hot',
+}
+
+export class GetHoleListQuery extends PaginateQuery {
+  @IsEnum(HoleListMode, { message: '没有这个模式哦' })
+  @IsString()
+  mode: HoleListMode = HoleListMode.latest;
+}

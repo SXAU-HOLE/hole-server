@@ -3,7 +3,10 @@ export const Limit = {
     holeBodyMaxLength: 5000,
     holeMaxImgLength: 6,
     holeTitleLength: 20,
-    holeTagsMaxLength: 5
+    holeTagsMaxLength: 5,
+    holeCommentBodyMaxLength: 500,
+    holeCommentBodyMinLength: 1,
+    holeCommentImgMaxLength: 3,
   },
   user: {
     minUsernameLength: 1,

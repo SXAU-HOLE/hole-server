@@ -34,6 +34,7 @@
     "cross-env": "^7.0.3",
     "crypto": "^1.0.1",
     "mysql2": "^3.6.1",
+    "nestjs-typeorm-paginate": "^4.0.4",
     "passport": "^0.6.0",
     "passport-jwt": "^4.0.1",
     "passport-local": "^1.0.0",

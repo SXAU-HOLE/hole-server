@@ -6,11 +6,18 @@ import {
   CreateHoleDto,
   DeleteHoleDto,
   GetHoleDetailQuery,
+  GetHoleListQuery,
 } from './dto/hole.dto';
+import { CreateCommentDto, GetHoleCommentDto } from './dto/comment.dto';
 
 @Controller('hole')
 export class HoleController {
   constructor(private readonly holeService: HoleService) {}
+
+  @Get('/list')
+  getList(@Body() dto: GetHoleListQuery, @User() user: IUser) {
+    return this.holeService.getList(dto, user);
+  }
 
   // TODO 节流防止一直请求
   @Post('/create')
@@ -26,5 +33,15 @@ export class HoleController {
   @Get('/detail')
   getDetail(@Query() dto: GetHoleDetailQuery, @User() user: IUser) {
     return this.holeService.getHoleDetail(dto, user);
+  }
+
+  @Post('/comment')
+  createComment(@Body() dto: CreateCommentDto, @User() user: IUser) {
+    return this.holeService.createComment(dto, user);
+  }
+
+  @Get('/comment')
+  getComment(@Query() dto: GetHoleCommentDto, @User() user: IUser) {
+    return this.holeService.getComment(dto, user);
   }
 }
