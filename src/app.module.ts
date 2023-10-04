@@ -12,6 +12,7 @@ import { Hole } from './entity/hole/hole.entity';
 import { Tags } from './entity/hole/tags.entity';
 import { Reply } from './entity/hole/reply.entity';
 import { Comment } from './entity/hole/comment.entity';
+import { HoleModule } from './modules/hole/hole.module';
 
 @Module({
   imports: [
@@ -34,6 +35,7 @@ import { Comment } from './entity/hole/comment.entity';
     AuthModule,
     UserModule,
     CommonModule,
+    HoleModule,
   ],
   controllers: [AppController],
   providers: [AppService],
