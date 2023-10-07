@@ -1,4 +1,8 @@
-import { ForbiddenException, Injectable } from '@nestjs/common';
+import {
+  BadRequestException,
+  ForbiddenException,
+  Injectable,
+} from '@nestjs/common';
 import { IUser } from '../user/user.controller';
 import { InjectRepository } from '@nestjs/typeorm';
 import { User } from 'src/entity/user/user.entity';
@@ -94,6 +98,87 @@ export class HoleService {
       .getOne();
 
     return createResponse('获取树洞详细成功', data);
+  }
+
+  async likeHole(dto: GetHoleDetailQuery, reqUser: IUser) {
+    const isLiked = await this.holeRepo.findOne({
+      relations: { favoriteUsers: true },
+      where: {
+        id: dto.id,
+        favoriteUsers: { studentId: reqUser },
+      },
+    });
+
+    if (isLiked) {
+      throw new BadRequestException('你已经点赞过了哦');
+    }
+
+    const user = await this.userRepo.findOne({
+      where: { studentId: reqUser },
+    });
+
+    const hole = await this.holeRepo.findOne({
+      relations: { user: true },
+      where: { id: dto.id },
+      select: {
+        user: {
+          username: true,
+          studentId: true,
+        },
+      },
+    });
+
+    // 更新当前user的favoriteHole
+    await this.userRepo
+      .createQueryBuilder()
+      .relation(User, 'favoriteHole')
+      .of(user)
+      .add(hole);
+
+    // 更新hole的点赞数
+    await this.holeRepo
+      .createQueryBuilder()
+      .update(Hole)
+      .set({ favoriteCount: () => 'favoriteCount + 1' })
+      .where('id = :id', { id: dto.id })
+      .execute();
+
+    return createResponse('点赞成功');
+  }
+
+  async deleteLike(dto: GetHoleDetailQuery, reqUser: IUser) {
+    const hole = await this.holeRepo.findOne({
+      relations: { favoriteUsers: true },
+      where: {
+        id: dto.id,
+        favoriteUsers: {
+          studentId: reqUser,
+        },
+      },
+    });
+
+    if (!hole) {
+      throw new BadRequestException('你还没有点赞哦');
+    }
+
+    const user = await this.userRepo.findOne({
+      where: { studentId: reqUser },
+    });
+
+    await this.userRepo
+      .createQueryBuilder()
+      .relation(User, 'favoriteHole')
+      .of(user)
+      .remove(hole);
+
+    await this.holeRepo
+      .createQueryBuilder()
+      .update(Hole)
+      .set({ favoriteCount: () => 'favoriteCount - 1' } as any)
+      .where('id = :id', { id: dto.id })
+      .execute();
+
+    return createResponse('取消点赞成功');
   }
 
   async getList(query: GetHoleListQuery, reqUser: IUser) {

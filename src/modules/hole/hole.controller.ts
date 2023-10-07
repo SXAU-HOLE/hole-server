@@ -35,6 +35,16 @@ export class HoleController {
     return this.holeService.getHoleDetail(dto, user);
   }
 
+  @Post('/like')
+  likeHole(@Body() dto: GetHoleDetailQuery, @User() user: IUser) {
+    return this.holeService.likeHole(dto, user);
+  }
+
+  @Delete('/like')
+  deleteLike(@Body() dto: GetHoleDetailQuery, @User() user: IUser) {
+    return this.holeService.deleteLike(dto, user);
+  }
+
   @Post('/comment')
   createComment(@Body() dto: CreateCommentDto, @User() user: IUser) {
     return this.holeService.createComment(dto, user);
