@@ -38,8 +38,8 @@ export class AuthService {
     const token = this.signToken(studentId);
 
     return {
-      asscee_token: token,
-      message: "登录成功！"
+      access_token: token,
+      message: '登录成功！',
     };
   }
 
