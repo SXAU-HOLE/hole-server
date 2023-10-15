@@ -15,7 +15,7 @@ export class HoleController {
   constructor(private readonly holeService: HoleService) {}
 
   @Get('/list')
-  getList(@Body() dto: GetHoleListQuery, @User() user: IUser) {
+  getList(@Query() dto: GetHoleListQuery, @User() user: IUser) {
     return this.holeService.getList(dto, user);
   }
 

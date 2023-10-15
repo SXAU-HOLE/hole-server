@@ -22,10 +22,10 @@ export class CreateHoleDto {
   @IsArray()
   imgs: string[];
 
-  @MaxLength(Limit.hole.holeTitleLength, {
-    message: `标题最长只能有${Limit.hole.holeTitleLength}个字哦`,
-  })
-  @IsString()
+  // @MaxLength(Limit.hole.holeTitleLength, {
+  //   message: `标题最长只能有${Limit.hole.holeTitleLength}个字哦`,
+  // })
+  // @IsString()
   title?: string;
 
   @ArrayMaxSize(Limit.hole.holeTagsMaxLength, {

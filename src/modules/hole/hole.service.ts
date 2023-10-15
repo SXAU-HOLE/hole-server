@@ -182,7 +182,9 @@ export class HoleService {
   }
 
   async getList(query: GetHoleListQuery, reqUser: IUser) {
-    const holeQuery = this.holeRepo.createQueryBuilder('hole');
+    const holeQuery = this.holeRepo.createQueryBuilder('hole').setFindOptions({
+      relations: { user: true },
+    });
 
     const data = await paginate(holeQuery, {
       limit: query.limit,
