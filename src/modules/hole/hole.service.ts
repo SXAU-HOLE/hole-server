@@ -16,6 +16,7 @@ import {
   DeleteHoleDto,
   GetHoleDetailQuery,
   GetHoleListQuery,
+  HoleListMode,
 } from './dto/hole.dto';
 import { CreateCommentDto, GetHoleCommentDto } from './dto/comment.dto';
 import { paginate } from 'nestjs-typeorm-paginate';
@@ -186,9 +187,17 @@ export class HoleService {
       relations: { user: true },
     });
 
+    if (query.mode === HoleListMode.hot) {
+      holeQuery
+        .addSelect(`LOG10(RAND(hole.id)) * RAND() * 100`, 'score')
+        .orderBy('score', 'DESC');
+    } else {
+      holeQuery.orderBy('hole.createAt', 'DESC');
+    }
+
     const data = await paginate(holeQuery, {
-      limit: query.limit,
-      page: query.page,
+      limit: query.limit || 10,
+      page: query.page || 1,
     });
 
     return data;
