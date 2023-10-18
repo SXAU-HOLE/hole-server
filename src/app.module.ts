@@ -13,6 +13,7 @@ import { Tags } from './entity/hole/tags.entity';
 import { Reply } from './entity/hole/reply.entity';
 import { Comment } from './entity/hole/comment.entity';
 import { HoleModule } from './modules/hole/hole.module';
+import { OssModule } from './modules/oss/oss.module';
 
 @Module({
   imports: [
@@ -36,6 +37,7 @@ import { HoleModule } from './modules/hole/hole.module';
     UserModule,
     CommonModule,
     HoleModule,
+    OssModule,
   ],
   controllers: [AppController],
   providers: [AppService],

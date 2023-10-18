@@ -12,3 +12,9 @@ AVATAR_URL: "https://api.multiavatar.com/"
 JWT_CONSTANTS: 
   secret: 'sxaujwtkey'
   expiresIn: '30d'
+
+QI_NIU: 
+  AccessKey: 'W8mEXv3m-WYwOs4O0iPRhk5VQQ2Vdymy-Fx4OhmK'
+  SecretKey: 'MwYX3EIujQG6bmOVGXQJLzVaRDvnECxMw_IIglKT'
+  qn_host: 'http://s2p8kprr3.hb-bkt.clouddn.com/'
+  bucket: 'sxau-hole'
