@@ -40,4 +40,6 @@ export class Comment extends CommonEntity {
   async afterLoad() {
     this.favoriteCount = this.favoriteUsers?.length;
   }
+
+  repliesCount?: number;
 }

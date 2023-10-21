@@ -13,6 +13,7 @@ import {
   CreateCommentReplyDto,
   GetHoleCommentDto,
 } from './dto/comment.dto';
+import { GetRepliesQuery } from './dto/reply.dto';
 
 @Controller('hole')
 export class HoleController {
@@ -62,5 +63,10 @@ export class HoleController {
   @Post('/comment/reply')
   replyComment(@Body() dto: CreateCommentReplyDto, @User() user: IUser) {
     return this.holeService.replyComment(dto, user);
+  }
+
+  @Get('/comment/reply')
+  getReplies(@Query() dto: GetRepliesQuery, @User() user: IUser) {
+    return this.holeService.getReplies(dto, user);
   }
 }

@@ -13,7 +13,7 @@ export class ReplyReplyDto {
 }
 
 export class GetRepliesQuery extends PaginateQuery {
-  @IsString()
+  // @IsString()
   id: string;
 
   // @IsEnum(HoleReplyOrderMode)

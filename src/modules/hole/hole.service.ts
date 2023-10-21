@@ -25,7 +25,8 @@ import {
 } from './dto/comment.dto';
 import { paginate } from 'nestjs-typeorm-paginate';
 import { Reply } from 'src/entity/hole/reply.entity';
-import { ReplyReplyDto } from './dto/reply.dto';
+import { GetRepliesQuery, ReplyReplyDto } from './dto/reply.dto';
+import { addCommentIsLiked, addReplyIsLiked } from './hole.utils';
 
 @Injectable()
 export class HoleService {
@@ -252,18 +253,25 @@ export class HoleService {
     const commentQuery = this.commentRepo
       .createQueryBuilder('comment')
       .setFindOptions({
-        relations: { user: true },
+        relations: {
+          user: true,
+          replies: true,
+        },
         order: {
           createAt: 'DESC',
         },
         where: {
           hole: { id: dto.id },
         },
-      });
+      })
+      .loadRelationCountAndMap('comment.repliesCount', 'comment.replies');
+
+    // 评论是否被赞过
+    addCommentIsLiked(commentQuery, reqUser);
 
     const data = await paginate<Comment>(commentQuery, {
-      limit: dto.limit,
-      page: dto.page,
+      limit: dto.limit || 10,
+      page: dto.page || 1,
     });
 
     return data;
@@ -290,10 +298,41 @@ export class HoleService {
       user,
     });
 
+    if (dto.replyId) {
+      const parentReply = await this.replyRepo.findOne({
+        relations: { user: true },
+        where: { id: dto.replyId },
+        select: {
+          user: {
+            studentId: true,
+            id: true,
+          },
+        },
+      });
+
+      reply.parentReply = parentReply;
+      reply.replyUser = parentReply.user;
+    }
+
     await this.replyRepo.save(reply);
 
     return createResponse('回复成功', { id: reply.id });
   }
 
-  async getReplies(query: ReplyReplyDto, reqUser: IUser) {}
+  // TODO fix isLiked
+  async getReplies(query: GetRepliesQuery, reqUser: IUser) {
+    const replyQuery = await this.replyRepo
+      .createQueryBuilder('reply')
+      .setFindOptions({
+        relations: { user: true, replyUser: true },
+        where: {
+          comment: { id: query.id },
+        },
+        order: { createAt: 'ASC' },
+      });
+
+    // addReplyIsLiked(replyQuery, reqUser);
+
+    return await replyQuery.getMany();
+  }
 }

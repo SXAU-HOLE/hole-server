@@ -68,4 +68,8 @@ export class User extends AutoIncIdEntity {
 
   @OneToMany(() => Reply, (reply) => reply.user)
   replies: Reply[];
+
+  // 被回复的评论
+  @OneToMany(() => Reply, (reply) => reply.replyUser)
+  repliedReply: Reply[];
 }
