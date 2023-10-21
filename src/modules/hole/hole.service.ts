@@ -193,9 +193,12 @@ export class HoleService {
   }
 
   async getList(query: GetHoleListQuery, reqUser: IUser) {
-    const holeQuery = this.holeRepo.createQueryBuilder('hole').setFindOptions({
-      relations: { user: true },
-    });
+    const holeQuery = this.holeRepo
+      .createQueryBuilder('hole')
+      .setFindOptions({
+        relations: { user: true },
+      })
+      .loadRelationCountAndMap('hole.commentCounts', 'hole.comments');
 
     if (query.mode === HoleListMode.hot) {
       holeQuery
