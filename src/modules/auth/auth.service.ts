@@ -11,6 +11,7 @@ import { Repository } from 'typeorm';
 import { encryptPassword, verifyPassword } from './auth.utils';
 import { ConfigService } from '@nestjs/config';
 import { JwtService } from '@nestjs/jwt';
+import { createResponse } from 'src/utils/create';
 
 @Injectable()
 export class AuthService {
@@ -88,7 +89,10 @@ export class AuthService {
 
     const token = this.signToken(studentId);
 
-    return token;
+    return {
+      access_token: token,
+      message: '登录成功！',
+    };
   }
 
   async forget(dto: ForgetPasswordDTO) {
@@ -116,9 +120,7 @@ export class AuthService {
 
     await this.userRepo.save(user);
 
-    const token = this.signToken(studentId);
-
-    return token;
+    return createResponse('重置密码成功');
   }
 
   signToken(studentId: string) {

@@ -16,11 +16,11 @@ export class CreateHoleDto {
   @IsString()
   body: string;
 
-  @ArrayMaxSize(Limit.hole.holeMaxImgLength, {
-    message: `最多只能上传${Limit.hole.holeMaxImgLength}张图片哦`,
-  })
-  @IsArray()
-  imgs: string[];
+  // @ArrayMaxSize(Limit.hole.holeMaxImgLength, {
+  //   message: `最多只能上传${Limit.hole.holeMaxImgLength}张图片哦`,
+  // })
+  // @IsArray()
+  imgs?: string[] = [];
 
   // @MaxLength(Limit.hole.holeTitleLength, {
   //   message: `标题最长只能有${Limit.hole.holeTitleLength}个字哦`,

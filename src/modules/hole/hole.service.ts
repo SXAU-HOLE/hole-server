@@ -42,7 +42,7 @@ export class HoleService {
       },
     });
 
-    const tags = dto.tags.map((tag) =>
+    const tags = dto.tags?.map((tag) =>
       this.tagsRepo.create({
         body: tag,
       }),
@@ -51,7 +51,7 @@ export class HoleService {
     const hole = await this.holeRepo.create({
       user,
       body: dto.body,
-      imgs: dto.imgs,
+      imgs: dto.imgs || [],
       tags,
       title: dto.title || '', //TODO 树洞分类category
     });
@@ -96,6 +96,16 @@ export class HoleService {
           },
         },
       })
+      .loadRelationCountAndMap(
+        'hole.isLiked',
+        'hole.favoriteUsers',
+        'isLiked',
+        (qb) =>
+          qb.where('isLiked.studentId = :studentId', {
+            studentId: reqUser,
+          }),
+      )
+      .loadRelationCountAndMap('hole.commentCounts', 'hole.comments')
       .getOne();
 
     return createResponse('获取树洞详细成功', data);

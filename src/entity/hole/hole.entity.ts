@@ -46,5 +46,9 @@ export class Hole extends AutoIncIdEntity {
   @ManyToMany(() => User, (user) => user.favoriteHole)
   favoriteUsers: User[];
 
+  readonly isLiked?: number;
+
+  readonly commentCounts?: number;
+
   // TODO reports
 }
