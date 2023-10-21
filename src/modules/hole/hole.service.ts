@@ -18,8 +18,14 @@ import {
   GetHoleListQuery,
   HoleListMode,
 } from './dto/hole.dto';
-import { CreateCommentDto, GetHoleCommentDto } from './dto/comment.dto';
+import {
+  CreateCommentDto,
+  CreateCommentReplyDto,
+  GetHoleCommentDto,
+} from './dto/comment.dto';
 import { paginate } from 'nestjs-typeorm-paginate';
+import { Reply } from 'src/entity/hole/reply.entity';
+import { ReplyReplyDto } from './dto/reply.dto';
 
 @Injectable()
 export class HoleService {
@@ -34,6 +40,9 @@ export class HoleService {
 
   @InjectRepository(Comment)
   private readonly commentRepo: Repository<Comment>;
+
+  @InjectRepository(Reply)
+  private readonly replyRepo: Repository<Reply>;
 
   async create(dto: CreateHoleDto, reqUser: IUser) {
     const user = await this.userRepo.findOne({
@@ -257,8 +266,34 @@ export class HoleService {
       page: dto.page,
     });
 
-    return createResponse('获取评论成功', {
-      data,
-    });
+    return data;
   }
+
+  async replyComment(dto: CreateCommentReplyDto, reqUser: IUser) {
+    const comment = await this.commentRepo.findOne({
+      relations: { user: true },
+      where: { id: dto.commentId },
+      select: {
+        user: {
+          studentId: true,
+          id: true,
+        },
+      },
+    });
+
+    const user = await this.userRepo.findOneBy({ studentId: reqUser });
+
+    const reply = this.replyRepo.create({
+      body: dto.body,
+      imgs: dto.imgs || [],
+      comment,
+      user,
+    });
+
+    await this.replyRepo.save(reply);
+
+    return createResponse('回复成功', { id: reply.id });
+  }
+
+  async getReplies(query: ReplyReplyDto, reqUser: IUser) {}
 }

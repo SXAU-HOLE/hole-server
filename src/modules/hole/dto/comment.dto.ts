@@ -57,3 +57,24 @@ export class GetHoleCommentDto extends PaginateQuery {
   @IsOptional()
   commentId?: string;
 }
+
+export class CreateCommentReplyDto {
+  @Length(15, 16)
+  @IsString()
+  @IsOptional()
+  commentId?: string;
+
+  @Length(1, 1000, { message: '评论字数限制在1-1000字' })
+  @IsString()
+  body: string;
+
+  @IsOptional()
+  replyId?: string;
+
+  @ArrayMaxSize(Limit.hole.holeMaxImgLength, {
+    message: `最多只能上传${Limit.hole.holeMaxImgLength}张图片哦`,
+  })
+  @IsArray()
+  @IsOptional()
+  imgs?: string[] = [];
+}

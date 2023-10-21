@@ -8,7 +8,11 @@ import {
   GetHoleDetailQuery,
   GetHoleListQuery,
 } from './dto/hole.dto';
-import { CreateCommentDto, GetHoleCommentDto } from './dto/comment.dto';
+import {
+  CreateCommentDto,
+  CreateCommentReplyDto,
+  GetHoleCommentDto,
+} from './dto/comment.dto';
 
 @Controller('hole')
 export class HoleController {
@@ -53,5 +57,10 @@ export class HoleController {
   @Get('/comment')
   getComment(@Query() dto: GetHoleCommentDto, @User() user: IUser) {
     return this.holeService.getComment(dto, user);
+  }
+
+  @Post('/comment/reply')
+  replyComment(@Body() dto: CreateCommentReplyDto, @User() user: IUser) {
+    return this.holeService.replyComment(dto, user);
   }
 }
