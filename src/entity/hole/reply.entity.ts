@@ -34,7 +34,7 @@ export class Reply extends CommonEntity {
   @Index()
   favoriteCount: number;
 
-  @ManyToMany(() => User, (user) => user.farotiteReply)
+  @ManyToMany(() => User, (user) => user.favoriteRelply)
   favoriteUsers: User[];
 
   @ManyToOne(() => User, (user) => user.repliedReply, { cascade: true })
@@ -44,6 +44,4 @@ export class Reply extends CommonEntity {
   async afterLoad() {
     this.favoriteCount = this.favoriteUsers?.length;
   }
-
-  readonly isLiked?: number;
 }

@@ -319,19 +319,18 @@ export class HoleService {
     return createResponse('回复成功', { id: reply.id });
   }
 
-  // TODO fix isLiked
   async getReplies(query: GetRepliesQuery, reqUser: IUser) {
     const replyQuery = await this.replyRepo
       .createQueryBuilder('reply')
       .setFindOptions({
-        relations: { user: true, replyUser: true },
+        relations: { user: true },
         where: {
           comment: { id: query.id },
         },
         order: { createAt: 'ASC' },
       });
 
-    // addReplyIsLiked(replyQuery, reqUser);
+    addReplyIsLiked(replyQuery, reqUser);
 
     return await replyQuery.getMany();
   }

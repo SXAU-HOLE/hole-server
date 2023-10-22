@@ -64,7 +64,8 @@ export class User extends AutoIncIdEntity {
   favoriteComment: Comment[];
 
   @ManyToMany(() => Reply, (reply) => reply.favoriteUsers, { cascade: true })
-  farotiteReply: Reply[];
+  @JoinTable()
+  favoriteRelply: Reply[];
 
   @OneToMany(() => Reply, (reply) => reply.user)
   replies: Reply[];
