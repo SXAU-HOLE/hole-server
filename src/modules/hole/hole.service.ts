@@ -257,6 +257,7 @@ export class HoleService {
           user: true,
           replies: {
             user: true,
+            replyUser: true,
           },
         },
         order: {
@@ -290,6 +291,10 @@ export class HoleService {
         },
       },
     });
+
+    if (!comment) {
+      throw new BadRequestException('该评论不存在');
+    }
 
     const user = await this.userRepo.findOneBy({ studentId: reqUser });
 
