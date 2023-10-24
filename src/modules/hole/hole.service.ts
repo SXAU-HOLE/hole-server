@@ -25,7 +25,7 @@ import {
 } from './dto/comment.dto';
 import { paginate } from 'nestjs-typeorm-paginate';
 import { Reply } from 'src/entity/hole/reply.entity';
-import { GetRepliesQuery, ReplyReplyDto } from './dto/reply.dto';
+import { GetRepliesQuery } from './dto/reply.dto';
 import { addCommentIsLiked, addReplyIsLiked } from './hole.utils';
 
 @Injectable()
@@ -245,7 +245,7 @@ export class HoleService {
     await this.commentRepo.save(comment);
 
     return createResponse('留言成功', {
-      id: comment.id,
+      ...comment,
     });
   }
 
@@ -255,7 +255,9 @@ export class HoleService {
       .setFindOptions({
         relations: {
           user: true,
-          replies: true,
+          replies: {
+            user: true,
+          },
         },
         order: {
           createAt: 'DESC',
@@ -320,18 +322,48 @@ export class HoleService {
   }
 
   async getReplies(query: GetRepliesQuery, reqUser: IUser) {
+    const commentQuery = await this.commentRepo
+      .createQueryBuilder('comment')
+      .setFindOptions({
+        where: {
+          id: query.id,
+        },
+        relations: {
+          user: true,
+        },
+        select: {
+          user: {
+            username: true,
+            avatar: true,
+          },
+        },
+      });
+
+    addCommentIsLiked(commentQuery, reqUser);
+
+    const comment = await commentQuery.getOne();
+
     const replyQuery = await this.replyRepo
       .createQueryBuilder('reply')
       .setFindOptions({
-        relations: { user: true },
-        where: {
-          comment: { id: query.id },
+        relations: {
+          user: true,
+          replyUser: true,
         },
-        order: { createAt: 'ASC' },
+        where: {
+          comment: {
+            id: query.id,
+          },
+        },
       });
 
     addReplyIsLiked(replyQuery, reqUser);
 
-    return await replyQuery.getMany();
+    const reply = await replyQuery.getMany();
+
+    return createResponse('获取回复成功', {
+      comment,
+      reply,
+    });
   }
 }
