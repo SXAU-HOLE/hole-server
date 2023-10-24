@@ -327,27 +327,6 @@ export class HoleService {
   }
 
   async getReplies(query: GetRepliesQuery, reqUser: IUser) {
-    const commentQuery = await this.commentRepo
-      .createQueryBuilder('comment')
-      .setFindOptions({
-        where: {
-          id: query.id,
-        },
-        relations: {
-          user: true,
-        },
-        select: {
-          user: {
-            username: true,
-            avatar: true,
-          },
-        },
-      });
-
-    addCommentIsLiked(commentQuery, reqUser);
-
-    const comment = await commentQuery.getOne();
-
     const replyQuery = await this.replyRepo
       .createQueryBuilder('reply')
       .setFindOptions({
@@ -360,15 +339,18 @@ export class HoleService {
             id: query.id,
           },
         },
+        order: {
+          createAt: 'ASC',
+        },
       });
 
     addReplyIsLiked(replyQuery, reqUser);
 
-    const reply = await replyQuery.getMany();
-
-    return createResponse('获取回复成功', {
-      comment,
-      reply,
+    const data = await paginate(replyQuery, {
+      limit: query.limit || 10,
+      page: query.page || 1,
     });
+
+    return data;
   }
 }
