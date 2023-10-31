@@ -7,9 +7,12 @@ import { Tags } from 'src/entity/hole/tags.entity';
 import { Comment } from 'src/entity/hole/comment.entity';
 import { HoleController } from './hole.controller';
 import { Reply } from 'src/entity/hole/reply.entity';
+import { HoleCategoryEntity } from '../../entity/hole/category/HoleCategory.entity';
 
 @Module({
-  imports: [TypeOrmModule.forFeature([User, Hole, Tags, Comment, Reply])],
+  imports: [
+    TypeOrmModule.forFeature([User, Hole, Tags, Comment, Reply,HoleCategoryEntity]),
+  ],
   controllers: [HoleController],
   providers: [HoleService],
 })

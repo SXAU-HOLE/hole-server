@@ -14,6 +14,7 @@ import { Reply } from './entity/hole/reply.entity';
 import { Comment } from './entity/hole/comment.entity';
 import { HoleModule } from './modules/hole/hole.module';
 import { OssModule } from './modules/oss/oss.module';
+import { HoleCategoryEntity } from './entity/hole/category/HoleCategory.entity';
 
 @Module({
   imports: [
@@ -29,7 +30,7 @@ import { OssModule } from './modules/oss/oss.module';
         return {
           ...config.get('DB_CONFIG'),
           synchronize: true,
-          entities: [User, Hole, Tags, Comment, Reply]
+          entities: [User, Hole, Tags, Comment, Reply,HoleCategoryEntity],
         } as TypeOrmModuleOptions;
       },
     }),

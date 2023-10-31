@@ -2,12 +2,12 @@ import {
   ArrayMaxSize,
   IsArray,
   IsEnum,
-  IsNumber,
   IsString,
   MaxLength,
 } from 'class-validator';
 import { Limit } from 'src/common/constants/limit';
 import { PaginateQuery } from 'src/common/dto/paginate.dto';
+import { HoleCategoryEnum } from 'src/common/enums/HoleCategory';
 
 export class CreateHoleDto {
   @MaxLength(Limit.hole.holeBodyMaxLength, {
@@ -16,17 +16,20 @@ export class CreateHoleDto {
   @IsString()
   body: string;
 
-  // @ArrayMaxSize(Limit.hole.holeMaxImgLength, {
-  //   message: `最多只能上传${Limit.hole.holeMaxImgLength}张图片哦`,
-  // })
-  // @IsArray()
+  @ArrayMaxSize(Limit.hole.holeMaxImgLength, {
+    message: `最多只能上传${Limit.hole.holeMaxImgLength}张图片哦`,
+  })
+  @IsArray()
   imgs?: string[] = [];
 
-  // @MaxLength(Limit.hole.holeTitleLength, {
-  //   message: `标题最长只能有${Limit.hole.holeTitleLength}个字哦`,
-  // })
-  // @IsString()
-  title?: string;
+  @MaxLength(Limit.hole.holeTitleLength, {
+    message: `标题最长只能有${Limit.hole.holeTitleLength}个字哦`,
+  })
+  @IsString()
+  title: string = '';
+
+  @IsEnum(HoleCategoryEnum)
+  category: HoleCategoryEnum = HoleCategoryEnum.sxauLife;
 
   @ArrayMaxSize(Limit.hole.holeTagsMaxLength, {
     message: `最多只能创建${Limit.hole.holeTagsMaxLength}个标签哦`,

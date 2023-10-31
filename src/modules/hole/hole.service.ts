@@ -1,8 +1,4 @@
-import {
-  BadRequestException,
-  ForbiddenException,
-  Injectable,
-} from '@nestjs/common';
+import { BadRequestException, ForbiddenException, Injectable } from '@nestjs/common';
 import { IUser } from '../user/user.controller';
 import { InjectRepository } from '@nestjs/typeorm';
 import { User } from 'src/entity/user/user.entity';
@@ -11,22 +7,13 @@ import { Hole } from 'src/entity/hole/hole.entity';
 import { Tags } from 'src/entity/hole/tags.entity';
 import { Comment } from 'src/entity/hole/comment.entity';
 import { createResponse } from 'src/utils/create';
-import {
-  CreateHoleDto,
-  DeleteHoleDto,
-  GetHoleDetailQuery,
-  GetHoleListQuery,
-  HoleListMode,
-} from './dto/hole.dto';
-import {
-  CreateCommentDto,
-  CreateCommentReplyDto,
-  GetHoleCommentDto,
-} from './dto/comment.dto';
+import { CreateHoleDto, DeleteHoleDto, GetHoleDetailQuery, GetHoleListQuery, HoleListMode } from './dto/hole.dto';
+import { CreateCommentDto, CreateCommentReplyDto, GetHoleCommentDto } from './dto/comment.dto';
 import { paginate } from 'nestjs-typeorm-paginate';
 import { Reply } from 'src/entity/hole/reply.entity';
 import { GetRepliesQuery } from './dto/reply.dto';
 import { addCommentIsLiked, addReplyIsLiked } from './hole.utils';
+import { HoleCategoryEntity } from '../../entity/hole/category/HoleCategory.entity';
 
 @Injectable()
 export class HoleService {
@@ -45,6 +32,9 @@ export class HoleService {
   @InjectRepository(Reply)
   private readonly replyRepo: Repository<Reply>;
 
+  @InjectRepository(HoleCategoryEntity)
+  private readonly categoryRepo: Repository<HoleCategoryEntity>;
+
   async create(dto: CreateHoleDto, reqUser: IUser) {
     const user = await this.userRepo.findOne({
       where: {
@@ -58,12 +48,17 @@ export class HoleService {
       }),
     );
 
+    const category = await this.categoryRepo.create({
+      name: dto.category
+    })
+
     const hole = await this.holeRepo.create({
       user,
       body: dto.body,
-      imgs: dto.imgs || [],
+      imgs: dto.imgs,
       tags,
-      title: dto.title || '', //TODO 树洞分类category
+      title: dto.title,
+      category
     });
 
     await this.holeRepo.save(hole);
