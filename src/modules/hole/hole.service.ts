@@ -1,4 +1,8 @@
-import { BadRequestException, ForbiddenException, Injectable } from '@nestjs/common';
+import {
+  BadRequestException,
+  ForbiddenException,
+  Injectable,
+} from '@nestjs/common';
 import { IUser } from '../user/user.controller';
 import { InjectRepository } from '@nestjs/typeorm';
 import { User } from 'src/entity/user/user.entity';
@@ -7,8 +11,18 @@ import { Hole } from 'src/entity/hole/hole.entity';
 import { Tags } from 'src/entity/hole/tags.entity';
 import { Comment } from 'src/entity/hole/comment.entity';
 import { createResponse } from 'src/utils/create';
-import { CreateHoleDto, DeleteHoleDto, GetHoleDetailQuery, GetHoleListQuery, HoleListMode } from './dto/hole.dto';
-import { CreateCommentDto, CreateCommentReplyDto, GetHoleCommentDto } from './dto/comment.dto';
+import {
+  CreateHoleDto,
+  DeleteHoleDto,
+  GetHoleDetailQuery,
+  GetHoleListQuery,
+  HoleListMode,
+} from './dto/hole.dto';
+import {
+  CreateCommentDto,
+  CreateCommentReplyDto,
+  GetHoleCommentDto,
+} from './dto/comment.dto';
 import { paginate } from 'nestjs-typeorm-paginate';
 import { Reply } from 'src/entity/hole/reply.entity';
 import { GetRepliesQuery } from './dto/reply.dto';
@@ -49,8 +63,8 @@ export class HoleService {
     );
 
     const category = await this.categoryRepo.create({
-      name: dto.category
-    })
+      name: dto.category,
+    });
 
     const hole = await this.holeRepo.create({
       user,
@@ -58,7 +72,7 @@ export class HoleService {
       imgs: dto.imgs,
       tags,
       title: dto.title,
-      category
+      category,
     });
 
     await this.holeRepo.save(hole);
@@ -257,6 +271,9 @@ export class HoleService {
         },
         order: {
           createAt: 'DESC',
+          replies: {
+            createAt: 'ASC',
+          },
         },
         where: {
           hole: { id: dto.id },
