@@ -2,6 +2,7 @@ import {
   BadRequestException,
   ForbiddenException,
   Injectable,
+  Inject,
 } from '@nestjs/common';
 import { IUser } from '../user/user.controller';
 import { InjectRepository } from '@nestjs/typeorm';
@@ -28,6 +29,7 @@ import { Reply } from 'src/entity/hole/reply.entity';
 import { GetRepliesQuery } from './dto/reply.dto';
 import { addCommentIsLiked, addReplyIsLiked } from './hole.utils';
 import { HoleCategoryEntity } from '../../entity/hole/category/HoleCategory.entity';
+import { HoleRepoService } from './service/hole.repo';
 
 @Injectable()
 export class HoleService {
@@ -48,6 +50,9 @@ export class HoleService {
 
   @InjectRepository(HoleCategoryEntity)
   private readonly categoryRepo: Repository<HoleCategoryEntity>;
+
+  @Inject()
+  private readonly holeRepoService: HoleRepoService;
 
   async create(dto: CreateHoleDto, reqUser: IUser) {
     const user = await this.userRepo.findOne({
@@ -131,87 +136,26 @@ export class HoleService {
   }
 
   async likeHole(dto: GetHoleDetailQuery, reqUser: IUser) {
-    const isLiked = await this.holeRepo.findOne({
-      relations: { favoriteUsers: true },
-      where: {
-        id: dto.id,
-        favoriteUsers: { studentId: reqUser },
-      },
+    return await this.holeRepoService.processLike({
+      dto,
+      reqUser,
+      repo: this.holeRepo,
+      property: 'favoriteHole',
+      entity: Hole as any,
     });
-
-    if (isLiked) {
-      throw new BadRequestException('你已经点赞过了哦');
-    }
-
-    const user = await this.userRepo.findOne({
-      where: { studentId: reqUser },
-    });
-
-    const hole = await this.holeRepo.findOne({
-      relations: { user: true },
-      where: { id: dto.id },
-      select: {
-        user: {
-          username: true,
-          studentId: true,
-        },
-      },
-    });
-
-    // 更新当前user的favoriteHole
-    await this.userRepo
-      .createQueryBuilder()
-      .relation(User, 'favoriteHole')
-      .of(user)
-      .add(hole);
-
-    // 更新hole的点赞数
-    await this.holeRepo
-      .createQueryBuilder()
-      .update(Hole)
-      .set({ favoriteCount: () => 'favoriteCount + 1' })
-      .where('id = :id', { id: dto.id })
-      .execute();
-
-    return createResponse('点赞成功');
   }
 
   async deleteLike(dto: GetHoleDetailQuery, reqUser: IUser) {
-    const hole = await this.holeRepo.findOne({
-      relations: { favoriteUsers: true },
-      where: {
-        id: dto.id,
-        favoriteUsers: {
-          studentId: reqUser,
-        },
-      },
+    return await this.holeRepoService.processDeleteLike({
+      dto,
+      reqUser,
+      repo: this.holeRepo,
+      property: 'favoriteHole',
+      entity: Hole as any,
     });
-
-    if (!hole) {
-      throw new BadRequestException('你还没有点赞哦');
-    }
-
-    const user = await this.userRepo.findOne({
-      where: { studentId: reqUser },
-    });
-
-    await this.userRepo
-      .createQueryBuilder()
-      .relation(User, 'favoriteHole')
-      .of(user)
-      .remove(hole);
-
-    await this.holeRepo
-      .createQueryBuilder()
-      .update(Hole)
-      .set({ favoriteCount: () => 'favoriteCount - 1' } as any)
-      .where('id = :id', { id: dto.id })
-      .execute();
-
-    return createResponse('取消点赞成功');
   }
 
-  async getList(query: GetHoleListQuery, reqUser: IUser) {
+  async getList(query: GetHoleListQuery) {
     const holeQuery = this.holeRepo
       .createQueryBuilder('hole')
       .setFindOptions({
@@ -364,5 +308,45 @@ export class HoleService {
     });
 
     return data;
+  }
+
+  async likeComment(dto: GetHoleDetailQuery, reqUser: IUser) {
+    return await this.holeRepoService.processLike({
+      dto,
+      reqUser,
+      repo: this.commentRepo,
+      property: 'favoriteComment',
+      entity: Comment as any,
+    });
+  }
+
+  async deleteLikeComment(dto: GetHoleDetailQuery, reqUser: IUser) {
+    return await this.holeRepoService.processDeleteLike({
+      dto,
+      reqUser,
+      repo: this.commentRepo,
+      property: 'favoriteComment',
+      entity: Comment as any,
+    });
+  }
+
+  async likeReply(dto: GetHoleDetailQuery, reqUser: IUser) {
+    return await this.holeRepoService.processLike({
+      dto,
+      reqUser,
+      repo: this.replyRepo,
+      property: 'favoriteReply',
+      entity: Reply as any,
+    });
+  }
+
+  async deleteLikeReply(dto: GetHoleDetailQuery, reqUser: IUser) {
+    return await this.holeRepoService.processDeleteLike({
+      dto,
+      reqUser,
+      repo: this.replyRepo,
+      property: 'favoriteReply',
+      entity: Reply as any,
+    });
   }
 }

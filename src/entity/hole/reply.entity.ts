@@ -34,7 +34,7 @@ export class Reply extends CommonEntity {
   @Index()
   favoriteCount: number;
 
-  @ManyToMany(() => User, (user) => user.favoriteRelply)
+  @ManyToMany(() => User, (user) => user.favoriteReply)
   favoriteUsers: User[];
 
   @ManyToOne(() => User, (user) => user.repliedReply, { cascade: true })

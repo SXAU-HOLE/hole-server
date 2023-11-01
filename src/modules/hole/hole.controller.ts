@@ -20,8 +20,8 @@ export class HoleController {
   constructor(private readonly holeService: HoleService) {}
 
   @Get('/list')
-  getList(@Query() dto: GetHoleListQuery, @User() user: IUser) {
-    return this.holeService.getList(dto, user);
+  getList(@Query() dto: GetHoleListQuery) {
+    return this.holeService.getList(dto);
   }
 
   // TODO 节流防止一直请求
@@ -60,6 +60,16 @@ export class HoleController {
     return this.holeService.getComment(dto, user);
   }
 
+  @Post('/comment/like')
+  likeComment(@Body() dto: GetHoleCommentDto, @User() user: IUser) {
+    return this.holeService.likeComment(dto, user);
+  }
+
+  @Delete('/comment/like')
+  deleteLikeComment(@Body() dto: GetHoleCommentDto, @User() user: IUser) {
+    return this.holeService.deleteLikeComment(dto, user);
+  }
+
   @Post('/comment/reply')
   replyComment(@Body() dto: CreateCommentReplyDto, @User() user: IUser) {
     return this.holeService.replyComment(dto, user);
@@ -68,5 +78,15 @@ export class HoleController {
   @Get('/comment/reply')
   getReplies(@Query() dto: GetRepliesQuery, @User() user: IUser) {
     return this.holeService.getReplies(dto, user);
+  }
+
+  @Post('/comment/reply/like')
+  likeReplyHole(@Body() dto: GetHoleDetailQuery, @User() user: IUser) {
+    return this.holeService.likeReply(dto, user);
+  }
+
+  @Delete('/comment/reply/like')
+  deleteReplyLike(@Body() dto: GetHoleDetailQuery, @User() user: IUser) {
+    return this.holeService.deleteLikeReply(dto, user);
   }
 }
