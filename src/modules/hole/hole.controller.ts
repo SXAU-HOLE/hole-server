@@ -89,4 +89,9 @@ export class HoleController {
   deleteReplyLike(@Body() dto: GetHoleDetailQuery, @User() user: IUser) {
     return this.holeService.deleteLikeReply(dto, user);
   }
+
+  @Get('/tags')
+  getHotTags() {
+    return this.holeService.getHotTags();
+  }
 }

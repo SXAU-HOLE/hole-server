@@ -61,11 +61,17 @@ export class HoleService {
       },
     });
 
-    const tags = dto.tags?.map((tag) =>
-      this.tagsRepo.create({
-        body: tag,
-      }),
-    );
+    const tagsFunc = dto.tags?.map(async (tag) => {
+      const exitedTags = await this.tagsRepo.findOne({
+        where: { body: tag },
+      });
+
+      if (exitedTags) return exitedTags;
+
+      return await this.tagsRepo.create({ body: tag });
+    });
+
+    const tags = await Promise.all(tagsFunc);
 
     const category = await this.categoryRepo.create({
       name: dto.category,
@@ -75,9 +81,9 @@ export class HoleService {
       user,
       body: dto.body,
       imgs: dto.imgs,
-      tags,
       title: dto.title,
       category,
+      tags: tags,
     });
 
     await this.holeRepo.save(hole);
@@ -348,5 +354,35 @@ export class HoleService {
       property: 'favoriteReply',
       entity: Reply as any,
     });
+  }
+
+  async getTags(tag: string) {
+    const exitedTags = await this.tagsRepo.findOne({
+      where: { body: tag },
+    });
+
+    if (exitedTags) return exitedTags;
+
+    return await this.tagsRepo.create({ body: tag });
+  }
+
+  async getHotTags() {
+    // const query = `
+    //   SELECT tags.*, COUNT(hole.id) as holesCount
+    //   FROM tags
+    //   LEFT JOIN hole ON x = x
+    //   GROUP BY tags.id
+    //   ORDER BY holesCount DESC
+    // `;
+    // const hotTags = await this.tagsRepo.query(query);
+    // return hotTags;
+    const tags = await this.tagsRepo
+      .createQueryBuilder('tags')
+      .loadRelationCountAndMap('tags.holesCount', 'tags.holes')
+      .getMany();
+
+    tags.sort((a, b) => b.holesCount - a.holesCount);
+
+    return tags.slice(0, Math.min(tags.length, 20));
   }
 }

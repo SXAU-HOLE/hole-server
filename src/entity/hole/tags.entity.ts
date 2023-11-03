@@ -9,4 +9,6 @@ export class Tags extends CommonEntity {
 
   @ManyToMany(() => Hole, (hole) => hole.tags)
   holes: Hole[];
+
+  holesCount?: any;
 }
