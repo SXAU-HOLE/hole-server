@@ -14,6 +14,7 @@ import {
   GetHoleCommentDto,
 } from './dto/comment.dto';
 import { GetRepliesQuery } from './dto/reply.dto';
+import { SearchQuery } from './dto/search.dto';
 
 @Controller('hole')
 export class HoleController {
@@ -93,5 +94,10 @@ export class HoleController {
   @Get('/tags')
   getHotTags() {
     return this.holeService.getHotTags();
+  }
+
+  @Get('/search')
+  search(@Query() query: SearchQuery) {
+    return this.holeService.search(query);
   }
 }

@@ -7,7 +7,7 @@ import {
 import { IUser } from '../user/user.controller';
 import { InjectRepository } from '@nestjs/typeorm';
 import { User } from 'src/entity/user/user.entity';
-import { Repository } from 'typeorm';
+import { Repository, FindManyOptions, Like } from 'typeorm';
 import { Hole } from 'src/entity/hole/hole.entity';
 import { Tags } from 'src/entity/hole/tags.entity';
 import { Comment } from 'src/entity/hole/comment.entity';
@@ -30,6 +30,7 @@ import { GetRepliesQuery } from './dto/reply.dto';
 import { addCommentIsLiked, addReplyIsLiked } from './hole.utils';
 import { HoleCategoryEntity } from '../../entity/hole/category/HoleCategory.entity';
 import { HoleRepoService } from './service/hole.repo';
+import { SearchQuery } from './dto/search.dto';
 
 @Injectable()
 export class HoleService {
@@ -384,5 +385,55 @@ export class HoleService {
     tags.sort((a, b) => b.holesCount - a.holesCount);
 
     return tags.slice(0, Math.min(tags.length, 20));
+  }
+
+  async search(query: SearchQuery) {
+    const { keywords, ...paginateQuery } = query;
+
+    let searchOptions: FindManyOptions<Hole> = {
+      relations: {
+        user: true,
+        comments: { user: true },
+        tags: true,
+      },
+      order: {
+        createAt: 'DESC',
+      },
+    };
+
+    if (keywords.startsWith('#')) {
+      const keyword = keywords.slice(1);
+      // hole id
+      if (!isNaN(Number(keyword))) {
+        searchOptions = {
+          ...searchOptions,
+          where: {
+            id: Number(keyword),
+          },
+        };
+      } else {
+        // hole tag
+        searchOptions = {
+          ...searchOptions,
+          where: {
+            tags: {
+              body: keyword,
+            },
+          },
+        };
+      }
+    } else {
+      // hole body
+      searchOptions = {
+        ...searchOptions,
+        where: {
+          body: Like(`%${keywords}%`),
+        },
+      };
+    }
+
+    const data = await paginate(this.holeRepo, paginateQuery, searchOptions);
+
+    return data;
   }
 }
