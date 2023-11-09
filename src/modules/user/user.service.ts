@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { BadRequestException, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { User } from 'src/entity/user/user.entity';
 import { Repository } from 'typeorm';
@@ -21,11 +21,20 @@ export class UserService {
         avatar: true,
         username: true,
         studentId: true,
+        createAt: true,
       },
     });
   }
 
   async editProfile(dto: EditProFileDto, reqUser: IUser) {
+    if (dto.username) {
+      const isExitedUser = await this.userReop.findOne({
+        where: { username: dto.username },
+      });
+
+      if (isExitedUser) throw new BadRequestException(`用户名已经存在啦`);
+    }
+
     return await this.userReop.update(
       {
         studentId: reqUser,
