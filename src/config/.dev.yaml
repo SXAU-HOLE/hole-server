@@ -18,3 +18,5 @@ QI_NIU:
   SecretKey: 'MwYX3EIujQG6bmOVGXQJLzVaRDvnECxMw_IIglKT'
   qn_host: 'http://s2p8kprr3.hb-bkt.clouddn.com/'
   bucket: 'sxau-hole'
+
+SXAU_URL: 'http://localhost:8080'

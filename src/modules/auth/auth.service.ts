@@ -12,6 +12,7 @@ import { encryptPassword, verifyPassword } from './auth.utils';
 import { ConfigService } from '@nestjs/config';
 import { JwtService } from '@nestjs/jwt';
 import { createResponse } from 'src/utils/create';
+import axios from 'axios';
 
 @Injectable()
 export class AuthService {
@@ -111,7 +112,7 @@ export class AuthService {
       sxauPassword,
     );
 
-    if (isSXAUPasswordVerified) {
+    if (!isSXAUPasswordVerified) {
       throw new BadRequestException('信息门户密码错误');
     }
 
@@ -131,6 +132,19 @@ export class AuthService {
    * TODO 验证信息门户
    */
   async verifySXAUPassword(studentId: string, password: string) {
-    return true;
+    const url = `${this.configService.get('SXAU_URL')}/mobile/login`;
+
+    const { data } = await axios({
+      method: 'POST',
+      url,
+      params: {
+        username: studentId,
+        password,
+      },
+    });
+
+    if (data.code === '1') return true;
+
+    return false;
   }
 }

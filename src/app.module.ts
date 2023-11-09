@@ -30,7 +30,7 @@ import { HoleCategoryEntity } from './entity/hole/category/HoleCategory.entity';
         return {
           ...config.get('DB_CONFIG'),
           synchronize: true,
-          entities: [User, Hole, Tags, Comment, Reply,HoleCategoryEntity],
+          entities: [User, Hole, Tags, Comment, Reply, HoleCategoryEntity],
         } as TypeOrmModuleOptions;
       },
     }),
