@@ -9,8 +9,11 @@ export const getEnv = () => {
 export const getConfig = () => {
   let env = getEnv();
   if (!env) env = 'prod';
-  const envYamlPath = path.join(process.cwd(), `./src/config/.${env}.yaml`);
+  const envYamlPath = path.join(process.cwd(), `./config/.${env}.yaml`);
   const envYamlFile = fs.readFileSync(envYamlPath, 'utf-8');
   const config = parse(envYamlFile);
+
+  console.log('config', config);
+
   return config;
 };
