@@ -7,7 +7,8 @@ export const getEnv = () => {
 };
 
 export const getConfig = () => {
-  const env = getEnv();
+  let env = getEnv();
+  if (!env) env = 'prod';
   const envYamlPath = path.join(process.cwd(), `./src/config/.${env}.yaml`);
   const envYamlFile = fs.readFileSync(envYamlPath, 'utf-8');
   const config = parse(envYamlFile);
