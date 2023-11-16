@@ -134,16 +134,20 @@ export class AuthService {
   async verifySXAUPassword(studentId: string, password: string) {
     const url = `${this.configService.get('SXAU_URL')}/mobile/login`;
 
-    const { data } = await axios({
-      method: 'POST',
-      url,
-      params: {
-        username: studentId,
-        password,
-      },
-    });
+    try {
+      const { data } = await axios({
+        method: 'POST',
+        url,
+        params: {
+          username: studentId,
+          password,
+        },
+      });
 
-    if (data.code === '1') return true;
+      if (data.code === '1') return true;
+    } catch {
+      throw new BadRequestException('请联系管理员，服务器故障啦~');
+    }
 
     return false;
   }
