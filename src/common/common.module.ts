@@ -9,8 +9,8 @@ import { Hole } from 'src/entity/hole/hole.entity';
 @Module({
   imports: [TypeOrmModule.forFeature([User, Hole])],
   providers: [
-    { provide: APP_GUARD, useClass: RolesGuard },
     { provide: APP_GUARD, useClass: JwtAuthGuard },
+    { provide: APP_GUARD, useClass: RolesGuard },
   ],
 })
 export class CommonModule {}
