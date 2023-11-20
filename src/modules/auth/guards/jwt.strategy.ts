@@ -8,17 +8,14 @@ import { Repository } from 'typeorm';
 
 @Injectable()
 export class JwtStrategy extends PassportStrategy(Strategy) {
-  @Inject()
-  private readonly configService: ConfigService;
-
   @InjectRepository(User)
   private readonly userRepo: Repository<User>;
 
-  constructor() {
+  constructor(private readonly config: ConfigService) {
     super({
       jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken(),
       ignoreExpiration: false,
-      secretOrKey: 'sxaujwtkey', // TODO remove
+      secretOrKey: config.get('JWT_CONSTANTS').secret, // TODO remove
     });
   }
 
