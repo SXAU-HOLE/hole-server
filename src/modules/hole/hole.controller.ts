@@ -21,8 +21,8 @@ export class HoleController {
   constructor(private readonly holeService: HoleService) {}
 
   @Get('/list')
-  getList(@Query() dto: GetHoleListQuery) {
-    return this.holeService.getList(dto);
+  getList(@Query() dto: GetHoleListQuery, @User() user: IUser) {
+    return this.holeService.getList(dto, user);
   }
 
   // TODO 节流防止一直请求

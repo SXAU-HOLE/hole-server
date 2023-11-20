@@ -162,7 +162,7 @@ export class HoleService {
     });
   }
 
-  async getList(query: GetHoleListQuery) {
+  async getList(query: GetHoleListQuery, reqUser: IUser) {
     const holeQuery = this.holeRepo
       .createQueryBuilder('hole')
       .setFindOptions({
@@ -177,6 +177,16 @@ export class HoleService {
     } else {
       holeQuery.orderBy('hole.createAt', 'DESC');
     }
+
+    holeQuery.loadRelationCountAndMap(
+      'hole.isLiked',
+      'hole.favoriteUsers',
+      'isLiked',
+      (qb) =>
+        qb.andWhere('isLiked.studentId = :studentId', {
+          studentId: reqUser,
+        }),
+    );
 
     const data = await paginate(holeQuery, {
       limit: query.limit || 10,
