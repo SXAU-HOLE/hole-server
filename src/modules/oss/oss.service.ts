@@ -23,6 +23,7 @@ export class OssService {
     const mac = new qiniu.auth.digest.Mac(AccessKey, SecretKey);
     const config = new qiniu.conf.Config({
       zone: qiniu.zone.Zone_z1,
+      useCdnDomain: true,
     });
     const fromUploader = new qiniu.form_up.FormUploader(config);
     const putExtra = new qiniu.form_up.PutExtra();
