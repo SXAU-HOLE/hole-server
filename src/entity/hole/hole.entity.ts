@@ -13,7 +13,6 @@ import { Tags } from './tags.entity';
 import { Comment } from './comment.entity';
 import { HoleCategoryEntity } from './category/HoleCategory.entity';
 
-
 @Entity()
 export class Hole extends AutoIncIdEntity {
   @Index({
@@ -48,8 +47,10 @@ export class Hole extends AutoIncIdEntity {
   @ManyToMany(() => User, (user) => user.favoriteHole)
   favoriteUsers: User[];
 
-  @ManyToOne(() => HoleCategoryEntity, (category) => category.holes,{ cascade: true})
-  category: HoleCategoryEntity
+  @ManyToOne(() => HoleCategoryEntity, (category) => category.holes, {
+    cascade: true,
+  })
+  category: HoleCategoryEntity;
 
   readonly isLiked?: number;
 

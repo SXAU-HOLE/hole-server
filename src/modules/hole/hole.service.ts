@@ -101,11 +101,18 @@ export class HoleService {
       select: { user: { studentId: true } },
     });
 
+    if (!hole) {
+      throw new BadRequestException('树洞不存在哦~');
+    }
+
     if (hole.user.studentId !== reqUser) {
       throw new ForbiddenException('只能删除自己的树洞哦');
     }
 
-    await this.holeRepo.delete({ id: hole.id });
+    hole.favoriteUsers = [];
+    hole.comments = [];
+    await this.holeRepo.save(hole);
+    await this.holeRepo.remove(hole);
 
     return createResponse('删除成功');
   }
