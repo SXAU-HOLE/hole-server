@@ -25,4 +25,5 @@ jobs:
           git pull
           yarn
           docker build -t server .
+          echo "Docker build completed"
           docker run -p 3000:3000 server
