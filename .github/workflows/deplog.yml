@@ -20,10 +20,5 @@ jobs:
         user: ${{ secrets.LDD_SERVER_NAME }} # 服务器的账号
         pass: ${{ secrets.LDD_SERVER_PASSWORD }} # 服务器的密码
         connect_timeout: 60s
-        scp: |
-          cd /www/wwwroot/hole-server
-          git pull
-          yarn
-          docker build -t server .
-          echo "Docker build completed"
-          docker run -p 3000:3000 server
+        scp: | 
+          echo "Connecting to ${{ secrets.LDD_SERVER_IP }} Success"
