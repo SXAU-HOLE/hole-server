@@ -443,9 +443,10 @@ export class HoleService {
       // hole body
       searchOptions = {
         ...searchOptions,
-        where: {
-          body: Like(`%${keywords}%`),
-        },
+        where: [
+          { title: Like(`%${keywords}%`) },
+          { body: Like(`%${keywords}%`) },
+        ],
       };
     }
 
