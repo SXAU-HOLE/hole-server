@@ -1,0 +1,28 @@
+name: Server CD
+on:
+  push:
+    branches: [ main ]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest #指定运行环境为最新的Ubuntu版本
+    strategy:
+      matrix:
+        node-version: [16.18.0] #指定node版本
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v3
+   
+    - name: Deploy to Server
+      uses: cross-the-world/ssh-scp-ssh-pipelines@latest
+      with:
+        host: ${{ secrets.LDD_SERVER_IP }} # 服务器的ip
+        user: ${{ secrets.LDD_SERVER_NAME }} # 服务器的账号
+        pass: ${{ secrets.LDD_SERVER_PASSWORD }} # 服务器的密码
+        connect_timeout: 60s
+        scp: |
+          cd /www/wwwroot/hole-server
+          git pull
+          yarn
+          docker build -t hole-server .
+          docker run -p 3000:3000 hole-server
