@@ -6,7 +6,7 @@ import {
 } from '@nestjs/common';
 import { IUser } from '../user/user.controller';
 import { InjectRepository } from '@nestjs/typeorm';
-import { User } from 'src/entity/user/user.entity';
+import { Role, User } from 'src/entity/user/user.entity';
 import { Repository, FindManyOptions, Like } from 'typeorm';
 import { Hole } from 'src/entity/hole/hole.entity';
 import { Tags } from 'src/entity/hole/tags.entity';
@@ -101,11 +101,15 @@ export class HoleService {
       select: { user: { studentId: true } },
     });
 
+    const user = await this.userRepo.findOne({
+      where: { id: dto.id },
+    });
+
     if (!hole) {
       throw new BadRequestException('树洞不存在哦~');
     }
 
-    if (hole.user.studentId !== reqUser) {
+    if (hole.user.studentId !== reqUser && user.role !== 'admin') {
       throw new ForbiddenException('只能删除自己的树洞哦');
     }
 
