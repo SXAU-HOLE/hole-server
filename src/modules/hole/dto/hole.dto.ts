@@ -1,13 +1,8 @@
-import {
-  ArrayMaxSize,
-  IsArray,
-  IsEnum,
-  IsString,
-  MaxLength,
-} from 'class-validator';
+import { ArrayMaxSize, IsArray, IsEnum, IsOptional, IsString, MaxLength } from 'class-validator';
 import { Limit } from 'src/common/constants/limit';
 import { PaginateQuery } from 'src/common/dto/paginate.dto';
 import { HoleCategoryEnum } from 'src/common/enums/HoleCategory';
+import { Vote } from './vote.dto';
 
 export class CreateHoleDto {
   @MaxLength(Limit.hole.holeBodyMaxLength, {
@@ -36,6 +31,9 @@ export class CreateHoleDto {
   })
   @IsArray()
   tags: string[] = [];
+
+  @IsOptional()
+  vote: Vote;
 }
 
 export class GetHoleDetailQuery {
@@ -43,7 +41,8 @@ export class GetHoleDetailQuery {
   id: number;
 }
 
-export class DeleteHoleDto extends GetHoleDetailQuery {}
+export class DeleteHoleDto extends GetHoleDetailQuery {
+}
 
 export enum HoleListMode {
   latest = 'latest',

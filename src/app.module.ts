@@ -15,6 +15,8 @@ import { Comment } from './entity/hole/comment.entity';
 import { HoleModule } from './modules/hole/hole.module';
 import { OssModule } from './modules/oss/oss.module';
 import { HoleCategoryEntity } from './entity/hole/category/HoleCategory.entity';
+import { Vote } from './entity/hole/vote.entity';
+import { VoteItem } from './entity/hole/VoteItem.entity';
 
 @Module({
   imports: [
@@ -30,7 +32,7 @@ import { HoleCategoryEntity } from './entity/hole/category/HoleCategory.entity';
         return {
           ...config.get('DB_CONFIG'),
           synchronize: true,
-          entities: [User, Hole, Tags, Comment, Reply, HoleCategoryEntity],
+          entities: [User, Hole, Tags, Comment, Reply, HoleCategoryEntity,Vote,VoteItem],
         } as TypeOrmModuleOptions;
       },
     }),

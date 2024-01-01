@@ -9,6 +9,9 @@ import { HoleController } from './hole.controller';
 import { Reply } from 'src/entity/hole/reply.entity';
 import { HoleCategoryEntity } from '../../entity/hole/category/HoleCategory.entity';
 import { HoleRepoService } from './service/hole.repo';
+import { Vote } from '../../entity/hole/vote.entity';
+import { VoteItem } from '../../entity/hole/VoteItem.entity';
+import { VoteService } from './service/vote.service';
 
 @Module({
   imports: [
@@ -19,9 +22,11 @@ import { HoleRepoService } from './service/hole.repo';
       Comment,
       Reply,
       HoleCategoryEntity,
+      Vote,
+      VoteItem
     ]),
   ],
   controllers: [HoleController],
-  providers: [HoleService, HoleRepoService],
+  providers: [HoleService, HoleRepoService, VoteService],
 })
 export class HoleModule {}

@@ -1,15 +1,10 @@
 import { AutoIncIdEntity } from 'src/common/entity/common.entity';
-import {
-  Column,
-  Entity,
-  Index,
-  JoinTable,
-  ManyToMany,
-  OneToMany,
-} from 'typeorm';
+import { Column, Entity, Index, JoinTable, ManyToMany, OneToMany } from 'typeorm';
 import { Hole } from '../hole/hole.entity';
 import { Comment } from '../hole/comment.entity';
 import { Reply } from '../hole/reply.entity';
+import { Vote } from '../hole/vote.entity';
+import { VoteItem } from '../hole/VoteItem.entity';
 
 export enum Gender {
   Mele = '男',
@@ -73,4 +68,12 @@ export class User extends AutoIncIdEntity {
   // 被回复的评论
   @OneToMany(() => Reply, (reply) => reply.replyUser)
   repliedReply: Reply[];
+
+  @ManyToMany(() => Vote, (vote) => vote.users, { cascade: true })
+  @JoinTable()
+  votes: Vote[];
+
+  @ManyToMany(() => VoteItem, (voteItem) => voteItem.user, { cascade: true })
+  @JoinTable()
+  voteItems: VoteItem[];
 }

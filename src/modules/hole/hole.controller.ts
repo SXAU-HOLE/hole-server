@@ -1,24 +1,20 @@
-import { Controller, Post, Body, Delete, Get, Query } from '@nestjs/common';
+import { Body, Controller, Delete, Get, Post, Query } from '@nestjs/common';
 import { HoleService } from './hole.service';
 import { IUser } from '../user/user.controller';
 import { User } from 'src/common/decorator/user.decorator';
-import {
-  CreateHoleDto,
-  DeleteHoleDto,
-  GetHoleDetailQuery,
-  GetHoleListQuery,
-} from './dto/hole.dto';
-import {
-  CreateCommentDto,
-  CreateCommentReplyDto,
-  GetHoleCommentDto,
-} from './dto/comment.dto';
+import { CreateHoleDto, DeleteHoleDto, GetHoleDetailQuery, GetHoleListQuery } from './dto/hole.dto';
+import { CreateCommentDto, CreateCommentReplyDto, GetHoleCommentDto } from './dto/comment.dto';
 import { GetRepliesQuery } from './dto/reply.dto';
 import { SearchQuery } from './dto/search.dto';
+import { PostVoteDto } from './dto/vote.dto';
+import { VoteService } from './service/vote.service';
 
 @Controller('hole')
 export class HoleController {
-  constructor(private readonly holeService: HoleService) {}
+  constructor(
+    private readonly holeService: HoleService,
+    private readonly voteService: VoteService,
+  ) {}
 
   @Get('/list')
   getList(@Query() dto: GetHoleListQuery, @User() user: IUser) {
@@ -99,5 +95,10 @@ export class HoleController {
   @Get('/search')
   search(@Query() query: SearchQuery) {
     return this.holeService.search(query);
+  }
+
+  @Post('/vote')
+  vote(@Body() dto: PostVoteDto, @User() user: IUser) {
+    return this.voteService.vote(dto, user);
   }
 }

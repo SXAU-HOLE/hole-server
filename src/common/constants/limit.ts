@@ -7,6 +7,8 @@ export const Limit = {
     holeCommentBodyMaxLength: 500,
     holeCommentBodyMinLength: 1,
     holeCommentImgMaxLength: 3,
+    holeVoteMaxLength: 10,
+    holeVoteItemLength: 20
   },
   user: {
     minUsernameLength: 1,

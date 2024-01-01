@@ -1,29 +1,14 @@
-import {
-  BadRequestException,
-  ForbiddenException,
-  Injectable,
-  Inject,
-} from '@nestjs/common';
+import { BadRequestException, ForbiddenException, Inject, Injectable } from '@nestjs/common';
 import { IUser } from '../user/user.controller';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Role, User } from 'src/entity/user/user.entity';
-import { Repository, FindManyOptions, Like } from 'typeorm';
+import { User } from 'src/entity/user/user.entity';
+import { FindManyOptions, Like, Repository } from 'typeorm';
 import { Hole } from 'src/entity/hole/hole.entity';
 import { Tags } from 'src/entity/hole/tags.entity';
 import { Comment } from 'src/entity/hole/comment.entity';
 import { createResponse } from 'src/utils/create';
-import {
-  CreateHoleDto,
-  DeleteHoleDto,
-  GetHoleDetailQuery,
-  GetHoleListQuery,
-  HoleListMode,
-} from './dto/hole.dto';
-import {
-  CreateCommentDto,
-  CreateCommentReplyDto,
-  GetHoleCommentDto,
-} from './dto/comment.dto';
+import { CreateHoleDto, DeleteHoleDto, GetHoleDetailQuery, GetHoleListQuery, HoleListMode } from './dto/hole.dto';
+import { CreateCommentDto, CreateCommentReplyDto, GetHoleCommentDto } from './dto/comment.dto';
 import { paginate } from 'nestjs-typeorm-paginate';
 import { Reply } from 'src/entity/hole/reply.entity';
 import { GetRepliesQuery } from './dto/reply.dto';
@@ -31,6 +16,8 @@ import { addCommentIsLiked, addReplyIsLiked } from './hole.utils';
 import { HoleCategoryEntity } from '../../entity/hole/category/HoleCategory.entity';
 import { HoleRepoService } from './service/hole.repo';
 import { SearchQuery } from './dto/search.dto';
+import { Vote } from '../../entity/hole/vote.entity';
+import { VoteItem } from '../../entity/hole/VoteItem.entity';
 
 @Injectable()
 export class HoleService {
@@ -51,6 +38,12 @@ export class HoleService {
 
   @InjectRepository(HoleCategoryEntity)
   private readonly categoryRepo: Repository<HoleCategoryEntity>;
+
+  @InjectRepository(Vote)
+  private readonly voteRepo: Repository<Vote>;
+
+  @InjectRepository(VoteItem)
+  private readonly voteItemRepo: Repository<VoteItem>;
 
   @Inject()
   private readonly holeRepoService: HoleRepoService;
@@ -86,6 +79,18 @@ export class HoleService {
       category,
       tags: tags,
     });
+
+    if (dto.vote) {
+      const voteItems = dto.vote.items.map((item) =>
+        this.voteItemRepo.create({ option: item }),
+      );
+
+      hole.vote = this.voteRepo.create({
+        items: voteItems,
+        type: dto.vote.type,
+        hole,
+      });
+    }
 
     await this.holeRepo.save(hole);
 

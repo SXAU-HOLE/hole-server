@@ -1,17 +1,10 @@
 import { AutoIncIdEntity } from 'src/common/entity/common.entity';
-import {
-  Column,
-  Entity,
-  Index,
-  JoinTable,
-  ManyToMany,
-  ManyToOne,
-  OneToMany,
-} from 'typeorm';
+import { Column, Entity, Index, JoinColumn, JoinTable, ManyToMany, ManyToOne, OneToMany, OneToOne } from 'typeorm';
 import { User } from '../user/user.entity';
 import { Tags } from './tags.entity';
 import { Comment } from './comment.entity';
 import { HoleCategoryEntity } from './category/HoleCategory.entity';
+import { Vote } from './vote.entity';
 
 @Entity()
 export class Hole extends AutoIncIdEntity {
@@ -51,6 +44,10 @@ export class Hole extends AutoIncIdEntity {
     cascade: true,
   })
   category: HoleCategoryEntity;
+
+  @OneToOne(() => Vote, (vote) => vote.hole, { cascade: true, eager: true })
+  @JoinColumn()
+  vote: Vote;
 
   readonly isLiked?: number;
 
