@@ -21,6 +21,11 @@ export class Vote extends CommonEntity {
   })
   type: VoteType;
 
+  @Column({
+     comment:'投票标题',
+  })
+  title: string;
+
   @CreateDateColumn({
     type: 'timestamp',
     comment: '投票结束时间',

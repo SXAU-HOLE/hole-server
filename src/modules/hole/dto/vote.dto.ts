@@ -13,6 +13,12 @@ export class Vote {
   })
   items: string[];
 
+  @IsString()
+  @MaxLength(Limit.hole.holeVoteTitleMaxLength, {
+    message: `标题最长只能是${Limit.hole.holeVoteTitleMaxLength}个字符哦`,
+  })
+  title: string;
+
   @IsEnum(VoteType)
   type: VoteType = VoteType.single;
 }
