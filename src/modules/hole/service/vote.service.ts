@@ -1,4 +1,8 @@
-import { BadRequestException, ConflictException, Injectable } from '@nestjs/common';
+import {
+  BadRequestException,
+  ConflictException,
+  Injectable,
+} from '@nestjs/common';
 import { PostVoteDto } from '../dto/vote.dto';
 import { InjectEntityManager, InjectRepository } from '@nestjs/typeorm';
 import { Vote, VoteType } from '../../../entity/hole/vote.entity';
@@ -47,19 +51,66 @@ export class VoteService {
       await t
         .getRepository(User)
         .createQueryBuilder()
-        .relation(User,'votes')
+        .relation(User, 'votes')
         .of(user)
-        .add(vote)
+        .add(vote);
 
       await t
         .getRepository(User)
         .createQueryBuilder()
-        .relation(User,'voteItems')
+        .relation(User, 'voteItems')
         .of(user)
-        .add(voteItems)
-    })
+        .add(voteItems);
+    });
 
     return createResponse('投票成功');
+  }
+
+  async findVote(dto: { id: number }, reqUser: string) {
+    const vote = await this.voteRepo
+      .createQueryBuilder('vote')
+      .setFindOptions({
+        where: {
+          hole: {
+            id: dto.id,
+          },
+        },
+      })
+      .leftJoinAndSelect('vote.items', 'voteItems')
+      .loadRelationCountAndMap('vote.isVoted', 'vote.users', 'isVoted', (qb) =>
+        qb.andWhere('isVoted.studentId = :studentId', { studentId: reqUser }),
+      )
+      .getOne();
+
+    if (!vote) {
+      return null;
+    }
+
+    const voteItems = await this.voteItemRepo
+      .createQueryBuilder('items')
+      .setFindOptions({
+        where: {
+          vote: { id: vote.id },
+        },
+      })
+      .loadRelationCountAndMap(
+        'items.isVoted',
+        'items.users',
+        'isVoted',
+        (qb) =>
+          qb.andWhere('isVoted.studentId = :studentId', { studentId: reqUser }),
+      )
+      .getMany();
+
+    const total = voteItems
+      .map((item) => item.count)
+      .reduce((a, b) => a + b, 0);
+
+    vote.totalCount = total;
+    vote.items = voteItems;
+    vote.isExpired = this.IsVoteExpired(vote);
+
+    return vote;
   }
 
   IsVoteExpired(vote: Vote) {

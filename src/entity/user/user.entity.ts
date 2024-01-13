@@ -1,5 +1,12 @@
 import { AutoIncIdEntity } from 'src/common/entity/common.entity';
-import { Column, Entity, Index, JoinTable, ManyToMany, OneToMany } from 'typeorm';
+import {
+  Column,
+  Entity,
+  Index,
+  JoinTable,
+  ManyToMany,
+  OneToMany,
+} from 'typeorm';
 import { Hole } from '../hole/hole.entity';
 import { Comment } from '../hole/comment.entity';
 import { Reply } from '../hole/reply.entity';
@@ -73,7 +80,7 @@ export class User extends AutoIncIdEntity {
   @JoinTable()
   votes: Vote[];
 
-  @ManyToMany(() => VoteItem, (voteItem) => voteItem.user, { cascade: true })
+  @ManyToMany(() => VoteItem, (voteItem) => voteItem.users, { cascade: true })
   @JoinTable()
   voteItems: VoteItem[];
 }

@@ -17,5 +17,5 @@ export class VoteItem extends CommonEntity {
   vote: Vote;
 
   @ManyToMany(() => User, (user) => user.voteItems)
-  user: User[];
+  users: User[];
 }

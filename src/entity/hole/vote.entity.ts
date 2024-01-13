@@ -1,4 +1,12 @@
-import { Column, CreateDateColumn, Entity, JoinColumn, ManyToMany, OneToMany, OneToOne } from 'typeorm';
+import {
+  Column,
+  CreateDateColumn,
+  Entity,
+  JoinColumn,
+  ManyToMany,
+  OneToMany,
+  OneToOne,
+} from 'typeorm';
 import { CommonEntity } from '../../common/entity/common.entity';
 import { Hole } from './hole.entity';
 import { User } from '../user/user.entity';
@@ -9,7 +17,7 @@ export enum VoteType {
   single = 'single',
 
   // 多选
-  multiple = 'multiple'
+  multiple = 'multiple',
 }
 
 @Entity()
@@ -22,7 +30,7 @@ export class Vote extends CommonEntity {
   type: VoteType;
 
   @Column({
-     comment:'投票标题',
+    comment: '投票标题',
   })
   title: string;
 
@@ -38,7 +46,13 @@ export class Vote extends CommonEntity {
   @ManyToMany(() => User, (user) => user.votes)
   users: User[];
 
-  @OneToMany(() => VoteItem, (voteItem) => voteItem.vote, { cascade: true, eager: true })
+  @OneToMany(() => VoteItem, (voteItem) => voteItem.vote, {
+    cascade: true,
+    eager: true,
+  })
   @JoinColumn()
   items: VoteItem[];
+
+  totalCount: number;
+  isExpired: boolean;
 }

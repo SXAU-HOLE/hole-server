@@ -1,4 +1,9 @@
-import { BadRequestException, ForbiddenException, Inject, Injectable } from '@nestjs/common';
+import {
+  BadRequestException,
+  ForbiddenException,
+  Inject,
+  Injectable,
+} from '@nestjs/common';
 import { IUser } from '../user/user.controller';
 import { InjectRepository } from '@nestjs/typeorm';
 import { User } from 'src/entity/user/user.entity';
@@ -7,8 +12,18 @@ import { Hole } from 'src/entity/hole/hole.entity';
 import { Tags } from 'src/entity/hole/tags.entity';
 import { Comment } from 'src/entity/hole/comment.entity';
 import { createResponse } from 'src/utils/create';
-import { CreateHoleDto, DeleteHoleDto, GetHoleDetailQuery, GetHoleListQuery, HoleListMode } from './dto/hole.dto';
-import { CreateCommentDto, CreateCommentReplyDto, GetHoleCommentDto } from './dto/comment.dto';
+import {
+  CreateHoleDto,
+  DeleteHoleDto,
+  GetHoleDetailQuery,
+  GetHoleListQuery,
+  HoleListMode,
+} from './dto/hole.dto';
+import {
+  CreateCommentDto,
+  CreateCommentReplyDto,
+  GetHoleCommentDto,
+} from './dto/comment.dto';
 import { paginate } from 'nestjs-typeorm-paginate';
 import { Reply } from 'src/entity/hole/reply.entity';
 import { GetRepliesQuery } from './dto/reply.dto';
@@ -18,6 +33,7 @@ import { HoleRepoService } from './service/hole.repo';
 import { SearchQuery } from './dto/search.dto';
 import { Vote } from '../../entity/hole/vote.entity';
 import { VoteItem } from '../../entity/hole/VoteItem.entity';
+import { VoteService } from './service/vote.service';
 
 @Injectable()
 export class HoleService {
@@ -47,6 +63,9 @@ export class HoleService {
 
   @Inject()
   private readonly holeRepoService: HoleRepoService;
+
+  @Inject()
+  private readonly voteService: VoteService;
 
   async create(dto: CreateHoleDto, reqUser: IUser) {
     const user = await this.userRepo.findOne({
@@ -127,11 +146,14 @@ export class HoleService {
   }
 
   async getHoleDetail(query: GetHoleDetailQuery, reqUser: IUser) {
+    const vote = await this.voteService.findVote(query, reqUser);
+
     const data = await this.holeRepo
       .createQueryBuilder('hole')
       .setFindOptions({
         relations: {
           user: true,
+          vote: true,
         },
         where: {
           id: query.id,
@@ -154,6 +176,8 @@ export class HoleService {
       )
       .loadRelationCountAndMap('hole.commentCounts', 'hole.comments')
       .getOne();
+
+    data.vote = vote;
 
     return createResponse('获取树洞详细成功', data);
   }
