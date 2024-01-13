@@ -105,6 +105,7 @@ export class HoleService {
       );
 
       hole.vote = this.voteRepo.create({
+        title: dto.vote.title,
         items: voteItems,
         type: dto.vote.type,
         hole,
